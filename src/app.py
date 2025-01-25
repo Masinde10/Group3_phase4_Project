@@ -23,6 +23,9 @@ gdown.download(url_con, 'cosine_sim.pkl', quiet=False)
 cosine_sim = joblib.load('cosine_sim.pkl')
 
 print("Models loaded successfully!")
+
+movies_df = pd.read_csv('../movies_df.csv')
+ratings_df = pd.read_csv('../ml-latest-small/ratings.csv')
 # Helper Functions
 def get_top_recommendations(user_id, svd_model, movies_df, ratings_df, top_n=5):
     # Getting all movies the user has already rated, then getting all movies and movies that haven't been rated by the user
