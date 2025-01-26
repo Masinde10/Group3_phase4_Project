@@ -12,7 +12,7 @@
 ## Project Overview
 We recognized that the movie industry generates billions annually, but with the rise of streaming platforms, users often faced choice paralysis due to the overwhelming number of movie options. To address this, we developed a Movie Recommendation System to deliver personalized suggestions, enhancing user satisfaction and engagement.
 
----
+![Movie Image](http://localhost:8888/view/src/static/images/karen-zhao-jLRIsfkWRGo-unsplash.jpg)
 
 ## Business Understanding
 
