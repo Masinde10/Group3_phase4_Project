@@ -7,20 +7,24 @@ import gdown
 
 app = Flask(__name__)
 # Model file IDs from Google Drive
-file_id_svd = '1SqU4hUb8VzJCpWkkPADmgui7gWvzXl3W'
-file_id_con = '1N0WJ7qVDiwkxcCpv7dlZzRNCf8GZnPtE'
+def load_model_con():
+    file_id_con = '1N0WJ7qVDiwkxcCpv7dlZzRNCf8GZnPtE'
 
-# URLs for the models
-url_svd = f'https://drive.google.com/uc?export=download&id={file_id_svd}'
-url_con = f'https://drive.google.com/uc?export=download&id={file_id_con}'
+    # URLs for the models
+    url_con = f'https://drive.google.com/uc?export=download&id={file_id_con}'
 
-# Download and load the SVD model
-gdown.download(url_svd, 'svd_model.pkl', quiet=False)
-svd_model = joblib.load('svd_model.pkl')
+    # Download and load the cosine similarity model
+    gdown.download(url_con, 'cosine_sim.pkl', quiet=False)
+    cosine_sim = joblib.load('cosine_sim.pkl')
 
-# Download and load the cosine similarity model
-gdown.download(url_con, 'cosine_sim.pkl', quiet=False)
-cosine_sim = joblib.load('cosine_sim.pkl')
+    return cosine_sim
+
+
+# load the SVD model
+svd_model = joblib.load('../collaborative_similarity.pkl')  # Trained SVD model
+
+
+
 
 print("Models loaded successfully!")
 
@@ -53,7 +57,7 @@ def get_top_recommendations(user_id, svd_model, movies_df, ratings_df, top_n=5):
 
 
 
-def recommend_movies(movie_title, df=movies_df, cosine_sim=cosine_sim, top_n=5):
+def recommend_movies(movie_title, cosine_sim, df=movies_df, top_n=5):
     """
     Recommend movies based on the given movie title.
     
@@ -90,7 +94,7 @@ def recommend_movies(movie_title, df=movies_df, cosine_sim=cosine_sim, top_n=5):
     return top_movies
 
 
-def hybrid_recommendations(user_id, movie_title, svd_model= svd_model, movies_df =  movies_df, ratings_df = ratings_df, cosine_sim = cosine_sim, top_n=5):
+def hybrid_recommendations(user_id, movie_title, svd_model= svd_model, movies_df =  movies_df, ratings_df = ratings_df, top_n=5):
     """
     Generate hybrid movie recommendations using SVD (collaborative filtering) 
     and cosine similarity (content-based filtering).
@@ -118,8 +122,8 @@ def hybrid_recommendations(user_id, movie_title, svd_model= svd_model, movies_df
 
     # Content-Based Recommendations
     cb_recommendations = pd.DataFrame(columns=['title', 'genres', 'source', 'predicted_rating'])  # Default empty DataFrame
-    if movie_title:
-        cb_recommendations = recommend_movies(movie_title, df=movies_df, cosine_sim=cosine_sim, top_n=top_n)
+    if movie_title and user_id != None:
+        cb_recommendations = recommend_movies(movie_title, df=movies_df, cosine_sim=load_model_con(), top_n=top_n)
         if isinstance(cb_recommendations, str):  # Handle case when movie_title is not found
             cb_recommendations = pd.DataFrame(columns=['title', 'genres', 'source', 'predicted_rating'])
         else:
